@@ -55,7 +55,10 @@ class AnalyticsEngine:
                         # This might be plain text (for migration)
                         return encrypted_text
                 except Exception as e:
-                    print(f"⚠️  Decryption warning: {e}")
+                    # Only print warning once, not for every record
+                    if not hasattr(safe_decrypt, 'warning_printed'):
+                        print(f"⚠️  Some data may not be encrypted (migration in progress)")
+                        safe_decrypt.warning_printed = True
                     return "[DECRYPTION_ERROR]"
             
             df["query"] = df["query"].apply(safe_decrypt)
@@ -75,7 +78,14 @@ class AnalyticsEngine:
     
     def categorize_queries(self, df):
         """Categorize queries using ML classifier"""
-        if df.empty or not self.classifier or not self.vectorizer:
+        if df.empty:
+            return df
+            
+        # Always ensure category column exists
+        if "category" not in df.columns:
+            df["category"] = "Unknown"
+        
+        if not self.classifier or not self.vectorizer:
             # Fallback to simple keyword matching
             df["category"] = df["query"].apply(self._simple_categorize)
             return df
@@ -104,40 +114,75 @@ class AnalyticsEngine:
     def generate_insights(self, df):
         """Generate comprehensive analytics insights"""
         if df.empty:
-            return {"error": "No data available"}
+            return {
+                "total_queries": 0,
+                "unique_users": "N/A",
+                "date_range": {
+                    "start": "No data",
+                    "end": "No data"
+                },
+                "categories": {},
+                "recent_queries": [],
+                "hourly_distribution": {},
+                "daily_distribution": {}
+            }
         
-        # Convert recent queries to JSON-serializable format
-        recent_queries = []
-        for _, row in df.head(10).iterrows():
-            recent_queries.append({
-                "query": str(row["query"]),
-                "answer": str(row["answer"]),
-                "timestamp": row["timestamp"].strftime("%Y-%m-%d %H:%M:%S"),
-                "category": str(row.get("category", "Unknown"))
-            })
+        # Ensure category column exists
+        if "category" not in df.columns:
+            df["category"] = "Unknown"
         
-        # Convert hourly distribution to JSON-serializable format
-        hourly_dist = df.groupby(df["timestamp"].dt.hour).size()
-        hourly_dict = {str(hour): int(count) for hour, count in hourly_dist.items()}
-        
-        # Convert daily distribution to JSON-serializable format
-        daily_dist = df.groupby(df["timestamp"].dt.date).size()
-        daily_dict = {str(date): int(count) for date, count in daily_dist.items()}
-        
-        insights = {
-            "total_queries": int(len(df)),
-            "unique_users": "N/A",  # We don't track users in this simple version
-            "date_range": {
-                "start": df["timestamp"].min().strftime("%Y-%m-%d %H:%M"),
-                "end": df["timestamp"].max().strftime("%Y-%m-%d %H:%M")
-            },
-            "categories": {str(k): int(v) for k, v in df["category"].value_counts().items()},
-            "recent_queries": recent_queries,
-            "hourly_distribution": hourly_dict,
-            "daily_distribution": daily_dict
-        }
-        
-        return insights
+        try:
+            # Convert recent queries to JSON-serializable format
+            recent_queries = []
+            for _, row in df.head(10).iterrows():
+                recent_queries.append({
+                    "query": str(row["query"]),
+                    "answer": str(row["answer"]),
+                    "timestamp": row["timestamp"].strftime("%Y-%m-%d %H:%M:%S"),
+                    "category": str(row.get("category", "Unknown"))
+                })
+            
+            # Convert hourly distribution to JSON-serializable format
+            hourly_dist = df.groupby(df["timestamp"].dt.hour).size()
+            hourly_dict = {str(hour): int(count) for hour, count in hourly_dist.items()}
+            
+            # Convert daily distribution to JSON-serializable format
+            daily_dist = df.groupby(df["timestamp"].dt.date).size()
+            daily_dict = {str(date): int(count) for date, count in daily_dist.items()}
+            
+            # Safe category counting
+            category_counts = df["category"].value_counts() if not df["category"].empty else {}
+            
+            insights = {
+                "total_queries": int(len(df)),
+                "unique_users": "N/A",  # We don't track users in this simple version
+                "date_range": {
+                    "start": df["timestamp"].min().strftime("%Y-%m-%d %H:%M"),
+                    "end": df["timestamp"].max().strftime("%Y-%m-%d %H:%M")
+                },
+                "categories": {str(k): int(v) for k, v in category_counts.items()},
+                "recent_queries": recent_queries,
+                "hourly_distribution": hourly_dict,
+                "daily_distribution": daily_dict
+            }
+            
+            return insights
+            
+        except Exception as e:
+            print(f"❌ Error in generate_insights: {e}")
+            # Return safe fallback data
+            return {
+                "total_queries": 0,
+                "unique_users": "N/A",
+                "date_range": {
+                    "start": "Error",
+                    "end": "Error"
+                },
+                "categories": {},
+                "recent_queries": [],
+                "hourly_distribution": {},
+                "daily_distribution": {}
+            }
     
     def create_visualizations(self, df):
         """Create analytics visualizations"""
@@ -148,6 +193,10 @@ class AnalyticsEngine:
         try:
             # Ensure static directory exists
             os.makedirs("static", exist_ok=True)
+            
+            # Ensure category column exists
+            if "category" not in df.columns:
+                df["category"] = "Unknown"
             
             # Set up the plotting style
             plt.style.use('default')

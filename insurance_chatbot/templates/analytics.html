@@ -277,22 +277,25 @@
         }
         
         function displayAnalytics(data) {
+            // Extract insights data from the response
+            const insights = data.insights || data;
+            
             // Display stats
             const statsGrid = document.getElementById('stats-grid');
             statsGrid.innerHTML = `
                 <div class="stat-card">
                     <h3>Total Queries</h3>
-                    <div class="value">${data.total_queries}</div>
+                    <div class="value">${insights.total_queries}</div>
                     <div class="label">Questions Asked</div>
                 </div>
                 <div class="stat-card">
                     <h3>Date Range</h3>
-                    <div class="value">${new Date(data.date_range.start).toLocaleDateString()}</div>
-                    <div class="label">to ${new Date(data.date_range.end).toLocaleDateString()}</div>
+                    <div class="value">${new Date(insights.date_range.start).toLocaleDateString()}</div>
+                    <div class="label">to ${new Date(insights.date_range.end).toLocaleDateString()}</div>
                 </div>
                 <div class="stat-card">
                     <h3>Categories</h3>
-                    <div class="value">${Object.keys(data.categories).length}</div>
+                    <div class="value">${Object.keys(insights.categories).length}</div>
                     <div class="label">Different Types</div>
                 </div>
             `;
@@ -300,8 +303,8 @@
             // Display category breakdown
             const categoryBreakdown = document.getElementById('category-breakdown');
             let categoryHtml = '<div style="text-align: left;">';
-            for (const [category, count] of Object.entries(data.categories)) {
-                const percentage = ((count / data.total_queries) * 100).toFixed(1);
+            for (const [category, count] of Object.entries(insights.categories)) {
+                const percentage = ((count / insights.total_queries) * 100).toFixed(1);
                 categoryHtml += `
                     <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 8px;">
                         <strong>${category}</strong>: ${count} queries (${percentage}%)
@@ -313,9 +316,9 @@
             
             // Display recent queries
             const recentQueriesList = document.getElementById('recent-queries-list');
-            if (data.recent_queries && data.recent_queries.length > 0) {
+            if (insights.recent_queries && insights.recent_queries.length > 0) {
                 let queriesHtml = '';
-                data.recent_queries.forEach(query => {
+                insights.recent_queries.forEach(query => {
                     queriesHtml += `
                         <div class="query-item">
                             <div class="question">${query.query}</div>

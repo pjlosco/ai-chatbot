@@ -238,7 +238,11 @@ class SecurityManager:
             self.current_key = self.load_current_key()
         
         if not self.current_key:
-            return None
+            # Generate a new key if none exists
+            print("🔑 No encryption key found, generating new key...")
+            self.current_key = self.generate_secure_key()
+            self.store_key_securely(self.current_key)
+            print("✅ New encryption key generated and stored")
         
         return Fernet(self.current_key)
     

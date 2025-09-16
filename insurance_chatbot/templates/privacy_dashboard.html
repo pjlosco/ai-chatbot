@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Dashboard - Insurance Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .dashboard-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .dashboard-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .dashboard-header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 4px solid #4facfe;
+        }
+        
+        .dashboard-card h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dashboard-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: #4facfe;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3d8bfe;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-active {
+            background: #28a745;
+        }
+        
+        .status-inactive {
+            background: #dc3545;
+        }
+        
+        .status-pending {
+            background: #ffc107;
+        }
+        
+        .data-summary {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .data-summary h4 {
+            color: #2d5a2d;
+            margin-bottom: 15px;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #d4edda;
+        }
+        
+        .data-item:last-child {
+            border-bottom: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #666;
+            margin: 20px 0;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link">← Back to Chat</a>
+    
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>🔒 Privacy Dashboard</h1>
+            <p>Manage your data and privacy settings</p>
+        </div>
+        
+        <div class="loading" id="loading">
+            <p>Loading your privacy data...</p>
+        </div>
+        
+        <div class="error" id="error">
+            <p id="error-message"></p>
+        </div>
+        
+        <div class="success" id="success">
+            <p id="success-message"></p>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h3>
+                    <span class="status-indicator" id="consent-status"></span>
+                    Data Processing Consent
+                </h3>
+                <p>Control whether your data can be processed for service provision and analytics.</p>
+                <div id="consent-actions">
+                    <button class="btn btn-primary" onclick="requestConsent()">Give Consent</button>
+                    <button class="btn btn-danger" onclick="withdrawConsent()">Withdraw Consent</button>
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <h3>📊 Your Data Summary</h3>
+                <p>View a summary of the data we have about you.</p>
+                <div class="data-summary" id="data-summary">
+                    <p>Click "View Data" to see your information</p>
+                </div>
+                <button class="btn btn-primary" onclick="viewDataSummary()">View Data</button>
+            </div>
+            
+            <div class="dashboard-card">
+                <h3>📤 Export Your Data</h3>
+                <p>Download a copy of all your data in a portable format.</p>
+                <button class="btn btn-success" onclick="exportData()">Export Data</button>
+            </div>
+            
+            <div class="dashboard-card">
+                <h3>🗑️ Delete Your Data</h3>
+                <p>Permanently delete all your data from our systems.</p>
+                <button class="btn btn-danger" onclick="deleteData()">Delete All Data</button>
+            </div>
+            
+            <div class="dashboard-card">
+                <h3>🎭 Anonymize Data</h3>
+                <p>Anonymize your data while preserving analytics value.</p>
+                <button class="btn btn-warning" onclick="anonymizeData()">Anonymize Data</button>
+            </div>
+            
+            <div class="dashboard-card">
+                <h3>📋 Privacy Policy</h3>
+                <p>Read our complete privacy policy and data practices.</p>
+                <button class="btn btn-primary" onclick="viewPrivacyPolicy()">View Policy</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load dashboard data on page load
+        window.onload = function() {
+            loadDashboardData();
+        };
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error-message').textContent = message;
+        }
+        
+        function showSuccess(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('success').style.display = 'block';
+            document.getElementById('success-message').textContent = message;
+        }
+        
+        function hideMessages() {
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('success').style.display = 'none';
+        }
+        
+        async function loadDashboardData() {
+            showLoading(true);
+            hideMessages();
+            
+            try {
+                // Check consent status
+                const consentResponse = await fetch('/privacy/consent');
+                if (consentResponse.ok) {
+                    const consentData = await consentResponse.json();
+                    updateConsentStatus(consentData);
+                }
+                
+                // Load data summary
+                await viewDataSummary();
+                
+            } catch (error) {
+                showError('Error loading dashboard data: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        function updateConsentStatus(consentData) {
+            const statusIndicator = document.getElementById('consent-status');
+            const consentActions = document.getElementById('consent-actions');
+            
+            if (consentData.consent_given) {
+                statusIndicator.className = 'status-indicator status-active';
+                consentActions.innerHTML = `
+                    <button class="btn btn-danger" onclick="withdrawConsent()">Withdraw Consent</button>
+                `;
+            } else {
+                statusIndicator.className = 'status-indicator status-inactive';
+                consentActions.innerHTML = `
+                    <button class="btn btn-primary" onclick="requestConsent()">Give Consent</button>
+                `;
+            }
+        }
+        
+        async function requestConsent() {
+            hideMessages();
+            
+            try {
+                const response = await fetch('/privacy/consent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        consent_type: 'data_processing'
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to request consent');
+                }
+                
+                const consentData = await response.json();
+                
+                // Record consent
+                const recordResponse = await fetch('/privacy/consent', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        consent_given: true,
+                        consent_type: 'data_processing',
+                        purposes: ['service_provision', 'analytics', 'security']
+                    })
+                });
+                
+                if (!recordResponse.ok) {
+                    throw new Error('Failed to record consent');
+                }
+                
+                showSuccess('Consent granted successfully!');
+                loadDashboardData();
+                
+            } catch (error) {
+                showError('Error granting consent: ' + error.message);
+            }
+        }
+        
+        async function withdrawConsent() {
+            if (confirm('Are you sure you want to withdraw consent? You will not be able to use the chatbot.')) {
+                hideMessages();
+                
+                try {
+                    const response = await fetch('/privacy/consent', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            reason: 'User request',
+                            consent_type: 'data_processing'
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to withdraw consent');
+                    }
+                    
+                    showSuccess('Consent withdrawn successfully.');
+                    loadDashboardData();
+                    
+                } catch (error) {
+                    showError('Error withdrawing consent: ' + error.message);
+                }
+            }
+        }
+        
+        async function viewDataSummary() {
+            try {
+                const response = await fetch('/privacy/export');
+                
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        document.getElementById('data-summary').innerHTML = `
+                            <p>Consent required to view data summary.</p>
+                        `;
+                        return;
+                    }
+                    throw new Error('Failed to load data summary');
+                }
+                
+                const data = await response.json();
+                
+                let summaryHtml = `
+                    <h4>Your Data Summary</h4>
+                    <div class="data-item">
+                        <strong>User ID:</strong>
+                        <span>${data.user_id}</span>
+                    </div>
+                    <div class="data-item">
+                        <strong>Export Date:</strong>
+                        <span>${new Date(data.export_timestamp).toLocaleString()}</span>
+                    </div>
+                    <div class="data-item">
+                        <strong>Chat Interactions:</strong>
+                        <span>${data.data_categories.chat_interactions.length} records</span>
+                    </div>
+                    <div class="data-item">
+                        <strong>Consent Records:</strong>
+                        <span>${data.data_categories.consent_records.length} records</span>
+                    </div>
+                `;
+                
+                document.getElementById('data-summary').innerHTML = summaryHtml;
+                
+            } catch (error) {
+                document.getElementById('data-summary').innerHTML = `
+                    <p>Error loading data summary: ${error.message}</p>
+                `;
+            }
+        }
+        
+        async function exportData() {
+            hideMessages();
+            showLoading(true);
+            
+            try {
+                const response = await fetch('/privacy/export');
+                
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        showError('Consent required for data export');
+                        return;
+                    }
+                    throw new Error('Failed to export data');
+                }
+                
+                const data = await response.json();
+                
+                // Create and download file
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `my-data-export-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                showSuccess('Data exported successfully!');
+                
+            } catch (error) {
+                showError('Error exporting data: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        async function deleteData() {
+            if (confirm('Are you sure you want to delete ALL your data? This action cannot be undone.')) {
+                hideMessages();
+                showLoading(true);
+                
+                try {
+                    const response = await fetch('/privacy/delete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            deletion_type: 'full',
+                            reason: 'User request'
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showSuccess('Data deleted successfully!');
+                        loadDashboardData();
+                    } else {
+                        showError('Failed to delete data: ' + result.error);
+                    }
+                    
+                } catch (error) {
+                    showError('Error deleting data: ' + error.message);
+                } finally {
+                    showLoading(false);
+                }
+            }
+        }
+        
+        async function anonymizeData() {
+            if (confirm('Are you sure you want to anonymize your data? This will remove personal identifiers while preserving analytics value.')) {
+                hideMessages();
+                showLoading(true);
+                
+                try {
+                    const response = await fetch('/privacy/anonymize', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showSuccess('Data anonymized successfully!');
+                        loadDashboardData();
+                    } else {
+                        showError('Failed to anonymize data: ' + result.error);
+                    }
+                    
+                } catch (error) {
+                    showError('Error anonymizing data: ' + error.message);
+                } finally {
+                    showLoading(false);
+                }
+            }
+        }
+        
+        async function viewPrivacyPolicy() {
+            try {
+                const response = await fetch('/privacy/policy');
+                const policy = await response.json();
+                
+                // Open policy in new window
+                const policyWindow = window.open('', '_blank');
+                policyWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>Privacy Policy</title>
+                            <style>
+                                body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+                                h1, h2, h3 { color: #333; }
+                                pre { background: #f4f4f4; padding: 20px; border-radius: 5px; overflow-x: auto; }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>Privacy Policy</h1>
+                            <pre>${JSON.stringify(policy, null, 2)}</pre>
+                        </body>
+                    </html>
+                `);
+                
+            } catch (error) {
+                showError('Error loading privacy policy: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

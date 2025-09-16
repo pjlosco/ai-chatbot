@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Consent - Insurance Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .consent-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .consent-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .consent-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .consent-header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .consent-content {
+            margin-bottom: 30px;
+        }
+        
+        .consent-section {
+            margin-bottom: 25px;
+        }
+        
+        .consent-section h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 10px;
+            border-left: 4px solid #4facfe;
+            padding-left: 15px;
+        }
+        
+        .consent-section p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .consent-section ul {
+            color: #666;
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .consent-section li {
+            margin-bottom: 5px;
+        }
+        
+        .data-collection {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .data-collection h4 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .data-item:last-child {
+            border-bottom: none;
+        }
+        
+        .data-item strong {
+            color: #333;
+        }
+        
+        .data-item span {
+            color: #666;
+        }
+        
+        .user-rights {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .user-rights h4 {
+            color: #2d5a2d;
+            margin-bottom: 15px;
+        }
+        
+        .right-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+        }
+        
+        .right-item::before {
+            content: "✓";
+            color: #4caf50;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .consent-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: #4facfe;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3d8bfe;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .consent-checkbox {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .consent-checkbox input[type="checkbox"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+        
+        .consent-checkbox label {
+            color: #333;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #666;
+            margin: 20px 0;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .consent-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .consent-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="consent-container">
+        <div class="consent-header">
+            <h1>🔒 Privacy & Data Consent</h1>
+            <p>Please review our data collection practices and provide your consent</p>
+        </div>
+        
+        <div class="consent-content">
+            <div class="consent-section">
+                <h3>What We Collect</h3>
+                <p>To provide you with accurate insurance information, we collect:</p>
+                <div class="data-collection">
+                    <div class="data-item">
+                        <strong>Chat Messages</strong>
+                        <span>Your questions and our responses</span>
+                    </div>
+                    <div class="data-item">
+                        <strong>Session Data</strong>
+                        <span>Session ID, IP address, browser info</span>
+                    </div>
+                    <div class="data-item">
+                        <strong>Analytics Data</strong>
+                        <span>Usage patterns (anonymized)</span>
+                    </div>
+                    <div class="data-item">
+                        <strong>Retention Period</strong>
+                        <span>7 years (HIPAA requirement)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="consent-section">
+                <h3>Why We Collect This Data</h3>
+                <ul>
+                    <li><strong>Service Provision:</strong> To answer your insurance questions accurately</li>
+                    <li><strong>Analytics:</strong> To improve our chatbot's performance (data is anonymized)</li>
+                    <li><strong>Security:</strong> To protect against abuse and ensure system integrity</li>
+                    <li><strong>Compliance:</strong> To meet HIPAA and healthcare data requirements</li>
+                </ul>
+            </div>
+            
+            <div class="consent-section">
+                <h3>Your Rights</h3>
+                <div class="user-rights">
+                    <div class="right-item">Access your data anytime</div>
+                    <div class="right-item">Correct any errors in your data</div>
+                    <div class="right-item">Delete your data (Right to be Forgotten)</div>
+                    <div class="right-item">Export your data in a portable format</div>
+                    <div class="right-item">Withdraw consent at any time</div>
+                    <div class="right-item">Object to data processing</div>
+                </div>
+            </div>
+            
+            <div class="consent-section">
+                <h3>Data Security</h3>
+                <p>We protect your data with:</p>
+                <ul>
+                    <li>AES-256 encryption at rest and in transit</li>
+                    <li>Role-based access controls with audit logging</li>
+                    <li>Data minimization (only collect what's necessary)</li>
+                    <li>No third-party sharing (data stays local)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="consent-checkbox">
+            <input type="checkbox" id="consent-checkbox">
+            <label for="consent-checkbox">
+                I understand and consent to the collection and processing of my data as described above. 
+                I acknowledge that I can withdraw this consent at any time.
+            </label>
+        </div>
+        
+        <div class="loading" id="loading">
+            <p>Processing your consent...</p>
+        </div>
+        
+        <div class="error" id="error">
+            <p id="error-message"></p>
+        </div>
+        
+        <div class="success" id="success">
+            <p>Consent recorded successfully! You can now use the chatbot.</p>
+        </div>
+        
+        <div class="consent-actions">
+            <button class="btn btn-primary" onclick="giveConsent()" id="consent-btn" disabled>
+                Give Consent
+            </button>
+            <button class="btn btn-secondary" onclick="viewPrivacyPolicy()">
+                View Full Privacy Policy
+            </button>
+            <button class="btn btn-danger" onclick="denyConsent()">
+                Deny Consent
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Enable consent button when checkbox is checked
+        document.getElementById('consent-checkbox').addEventListener('change', function() {
+            document.getElementById('consent-btn').disabled = !this.checked;
+        });
+        
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('success').style.display = 'none';
+        }
+        
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error-message').textContent = message;
+        }
+        
+        function showSuccess() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('success').style.display = 'block';
+        }
+        
+        async function giveConsent() {
+            showLoading();
+            
+            try {
+                // First request consent data
+                const consentResponse = await fetch('/privacy/consent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        consent_type: 'data_processing'
+                    })
+                });
+                
+                if (!consentResponse.ok) {
+                    throw new Error('Failed to request consent');
+                }
+                
+                // Then record consent
+                const recordResponse = await fetch('/privacy/consent', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        consent_given: true,
+                        consent_type: 'data_processing',
+                        purposes: ['service_provision', 'analytics', 'security']
+                    })
+                });
+                
+                if (!recordResponse.ok) {
+                    throw new Error('Failed to record consent');
+                }
+                
+                showSuccess();
+                
+                // Redirect to main chat after 2 seconds
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+                
+            } catch (error) {
+                showError('Error recording consent: ' + error.message);
+            }
+        }
+        
+        async function denyConsent() {
+            if (confirm('Are you sure you want to deny consent? You will not be able to use the chatbot.')) {
+                showLoading();
+                
+                try {
+                    const response = await fetch('/privacy/consent', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            consent_given: false,
+                            consent_type: 'data_processing'
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to record consent denial');
+                    }
+                    
+                    alert('Consent denied. You cannot use the chatbot without consent.');
+                    window.location.href = '/';
+                    
+                } catch (error) {
+                    showError('Error recording consent denial: ' + error.message);
+                }
+            }
+        }
+        
+        async function viewPrivacyPolicy() {
+            try {
+                const response = await fetch('/privacy/policy');
+                const policy = await response.json();
+                
+                // Open policy in new window
+                const policyWindow = window.open('', '_blank');
+                policyWindow.document.write(`
+                    <html>
+                        <head><title>Privacy Policy</title></head>
+                        <body>
+                            <h1>Privacy Policy</h1>
+                            <pre>${JSON.stringify(policy, null, 2)}</pre>
+                        </body>
+                    </html>
+                `);
+                
+            } catch (error) {
+                showError('Error loading privacy policy: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -193,7 +193,11 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
+        <div style="display: flex; gap: 10px; position: absolute; top: 20px; right: 20px;">
             <a href="/analytics/dashboard" class="analytics-link">📊 Analytics</a>
+            <a href="/privacy/dashboard" class="analytics-link">🔒 Privacy</a>
+            <a href="/error-analysis/dashboard" class="analytics-link">🔍 Errors</a>
+        </div>
             <h1>🏥 Insurance Query Assistant</h1>
             <p>Ask me anything about health insurance plans, enrollment, or coverage</p>
         </div>
@@ -264,6 +268,9 @@
                 
                 if (response.ok) {
                     addMessage(data.answer, 'bot');
+                } else if (data.consent_required) {
+                    // Redirect to consent page
+                    window.location.href = '/privacy/consent-page';
                 } else {
                     addMessage(`Error: ${data.error}`, 'bot');
                 }

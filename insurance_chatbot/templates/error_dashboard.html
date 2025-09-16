@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Analysis Dashboard - Insurance Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .dashboard-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .dashboard-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .dashboard-header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card.critical {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        }
+        
+        .stat-card.high {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 100%);
+        }
+        
+        .stat-card.medium {
+            background: linear-gradient(135deg, #fce38a 0%, #f38181 100%);
+        }
+        
+        .stat-card.low {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+        
+        .stat-card h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card .label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .chart-container h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .alerts-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .alerts-section h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .alert-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #ffc107;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .alert-item.critical {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        
+        .alert-item.high {
+            border-left-color: #fd7e14;
+            background: #fff3cd;
+        }
+        
+        .alert-item .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .alert-item .alert-type {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .alert-item .alert-time {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .alert-item .alert-message {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .alert-item .alert-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        
+        .errors-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .errors-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .error-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #6c757d;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .error-item.critical {
+            border-left-color: #dc3545;
+        }
+        
+        .error-item.high {
+            border-left-color: #fd7e14;
+        }
+        
+        .error-item.medium {
+            border-left-color: #ffc107;
+        }
+        
+        .error-item.low {
+            border-left-color: #17a2b8;
+        }
+        
+        .error-item .error-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .error-item .error-type {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .error-item .error-severity {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .error-item .error-severity.critical {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .error-item .error-severity.high {
+            background: #fd7e14;
+            color: white;
+        }
+        
+        .error-item .error-severity.medium {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .error-item .error-severity.low {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .error-item .error-message {
+            color: #666;
+            margin-bottom: 10px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .error-item .error-meta {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .refresh-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 20px auto;
+            display: block;
+            transition: background 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            background: #0056b3;
+        }
+        
+        .filters {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .filters h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-group label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .filter-group select, .filter-group input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link">← Back to Chat</a>
+    
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>🔍 Error Analysis Dashboard</h1>
+            <p>Comprehensive error monitoring and analysis for the Insurance Chatbot</p>
+        </div>
+        
+        <div id="loading" class="loading">
+            <h3>🔄 Loading error data...</h3>
+            <p>Please wait while we analyze error patterns and metrics.</p>
+        </div>
+        
+        <div id="error" class="error" style="display: none;">
+            <h3>❌ Error Loading Data</h3>
+            <p id="error-message"></p>
+        </div>
+        
+        <div id="dashboard-content" style="display: none;">
+            <!-- Error Summary Stats -->
+            <div class="stats-grid" id="stats-grid">
+                <!-- Stats will be populated by JavaScript -->
+            </div>
+            
+            <!-- Active Alerts -->
+            <div class="alerts-section" id="alerts-section" style="display: none;">
+                <h3>🚨 Active Alerts</h3>
+                <div id="alerts-list">
+                    <!-- Alerts will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Error Charts -->
+            <div class="charts-section">
+                <div class="chart-container">
+                    <h3>📊 Error Distribution by Severity</h3>
+                    <div id="severity-chart">
+                        <!-- Chart will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>📈 Error Distribution by Category</h3>
+                    <div id="category-chart">
+                        <!-- Chart will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="filters">
+                <h3>🔍 Filters</h3>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="time-range">Time Range</label>
+                        <select id="time-range">
+                            <option value="1">Last Hour</option>
+                            <option value="24" selected>Last 24 Hours</option>
+                            <option value="168">Last Week</option>
+                            <option value="720">Last Month</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="severity-filter">Severity</label>
+                        <select id="severity-filter">
+                            <option value="">All Severities</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="component-filter">Component</label>
+                        <select id="component-filter">
+                            <option value="">All Components</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Errors -->
+            <div class="errors-section">
+                <h3>💥 Recent Errors</h3>
+                <div id="recent-errors-list">
+                    <!-- Recent errors will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Top Error Patterns -->
+            <div class="errors-section">
+                <h3>🔄 Top Error Patterns</h3>
+                <div id="error-patterns-list">
+                    <!-- Error patterns will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <button class="refresh-btn" onclick="loadErrorData()">🔄 Refresh Data</button>
+    </div>
+
+    <script>
+        let currentFilters = {
+            timeRange: 24,
+            severity: '',
+            component: ''
+        };
+        
+        function loadErrorData() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('dashboard-content').style.display = 'none';
+            
+            const params = new URLSearchParams({
+                hours: currentFilters.timeRange,
+                severity: currentFilters.severity,
+                component: currentFilters.component
+            });
+            
+            fetch(`/error-analysis?${params}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    displayErrorData(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('error').style.display = 'block';
+                    document.getElementById('error-message').textContent = error.message;
+                });
+        }
+        
+        function displayErrorData(data) {
+            // Display summary stats
+            displaySummaryStats(data.summary);
+            
+            // Display alerts
+            displayAlerts(data.alerts || []);
+            
+            // Display charts
+            displayCharts(data.summary);
+            
+            // Display recent errors
+            displayRecentErrors(data.recent_errors || []);
+            
+            // Display error patterns
+            displayErrorPatterns(data.top_patterns || []);
+            
+            // Show the dashboard
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboard-content').style.display = 'block';
+        }
+        
+        function displaySummaryStats(summary) {
+            const statsGrid = document.getElementById('stats-grid');
+            const severityBreakdown = summary.severity_breakdown || {};
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <h3>Total Errors</h3>
+                    <div class="value">${summary.total_errors || 0}</div>
+                    <div class="label">In Last ${currentFilters.timeRange} Hours</div>
+                </div>
+                <div class="stat-card critical">
+                    <h3>Critical</h3>
+                    <div class="value">${severityBreakdown.critical || 0}</div>
+                    <div class="label">System Down</div>
+                </div>
+                <div class="stat-card high">
+                    <h3>High</h3>
+                    <div class="value">${severityBreakdown.high || 0}</div>
+                    <div class="label">Major Issues</div>
+                </div>
+                <div class="stat-card medium">
+                    <h3>Medium</h3>
+                    <div class="value">${severityBreakdown.medium || 0}</div>
+                    <div class="label">Minor Issues</div>
+                </div>
+                <div class="stat-card low">
+                    <h3>Low</h3>
+                    <div class="value">${severityBreakdown.low || 0}</div>
+                    <div class="label">Warnings</div>
+                </div>
+            `;
+        }
+        
+        function displayAlerts(alerts) {
+            const alertsSection = document.getElementById('alerts-section');
+            const alertsList = document.getElementById('alerts-list');
+            
+            if (alerts.length === 0) {
+                alertsSection.style.display = 'none';
+                return;
+            }
+            
+            alertsSection.style.display = 'block';
+            let alertsHtml = '';
+            
+            alerts.forEach(alert => {
+                alertsHtml += `
+                    <div class="alert-item ${alert.severity}">
+                        <div class="alert-header">
+                            <span class="alert-type">${alert.alert_type.replace('_', ' ').toUpperCase()}</span>
+                            <span class="alert-time">${new Date(alert.timestamp).toLocaleString()}</span>
+                        </div>
+                        <div class="alert-message">${alert.message}</div>
+                        <div class="alert-actions">
+                            <button class="btn btn-primary" onclick="acknowledgeAlert(${alert.id})">Acknowledge</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            alertsList.innerHTML = alertsHtml;
+        }
+        
+        function displayCharts(summary) {
+            // Severity chart
+            const severityChart = document.getElementById('severity-chart');
+            const severityBreakdown = summary.severity_breakdown || {};
+            
+            let severityHtml = '<div style="text-align: left;">';
+            for (const [severity, count] of Object.entries(severityBreakdown)) {
+                const percentage = summary.total_errors > 0 ? ((count / summary.total_errors) * 100).toFixed(1) : 0;
+                severityHtml += `
+                    <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 8px; border-left: 4px solid #${getSeverityColor(severity)};">
+                        <strong>${severity.toUpperCase()}</strong>: ${count} errors (${percentage}%)
+                    </div>
+                `;
+            }
+            severityHtml += '</div>';
+            severityChart.innerHTML = severityHtml;
+            
+            // Category chart
+            const categoryChart = document.getElementById('category-chart');
+            const categoryBreakdown = summary.category_breakdown || {};
+            
+            let categoryHtml = '<div style="text-align: left;">';
+            for (const [category, count] of Object.entries(categoryBreakdown)) {
+                const percentage = summary.total_errors > 0 ? ((count / summary.total_errors) * 100).toFixed(1) : 0;
+                categoryHtml += `
+                    <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 8px;">
+                        <strong>${category.replace('_', ' ').toUpperCase()}</strong>: ${count} errors (${percentage}%)
+                    </div>
+                `;
+            }
+            categoryHtml += '</div>';
+            categoryChart.innerHTML = categoryHtml;
+        }
+        
+        function displayRecentErrors(errors) {
+            const recentErrorsList = document.getElementById('recent-errors-list');
+            
+            if (errors.length === 0) {
+                recentErrorsList.innerHTML = '<p>No recent errors found.</p>';
+                return;
+            }
+            
+            let errorsHtml = '';
+            errors.forEach(error => {
+                errorsHtml += `
+                    <div class="error-item ${error.severity}">
+                        <div class="error-header">
+                            <span class="error-type">${error.error_type} in ${error.component}</span>
+                            <span class="error-severity ${error.severity}">${error.severity}</span>
+                        </div>
+                        <div class="error-message">${error.error_message}</div>
+                        <div class="error-meta">
+                            ${new Date(error.timestamp).toLocaleString()} | 
+                            Category: ${error.category} | 
+                            ID: ${error.error_id}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            recentErrorsList.innerHTML = errorsHtml;
+        }
+        
+        function displayErrorPatterns(patterns) {
+            const patternsList = document.getElementById('error-patterns-list');
+            
+            if (patterns.length === 0) {
+                patternsList.innerHTML = '<p>No error patterns found.</p>';
+                return;
+            }
+            
+            let patternsHtml = '';
+            patterns.forEach(pattern => {
+                patternsHtml += `
+                    <div class="error-item">
+                        <div class="error-header">
+                            <span class="error-type">${pattern.error_type} in ${pattern.component}</span>
+                            <span class="error-severity">${pattern.occurrence_count} occurrences</span>
+                        </div>
+                        <div class="error-message">Last seen: ${new Date(pattern.last_seen).toLocaleString()}</div>
+                    </div>
+                `;
+            });
+            
+            patternsList.innerHTML = patternsHtml;
+        }
+        
+        function getSeverityColor(severity) {
+            const colors = {
+                'critical': 'dc3545',
+                'high': 'fd7e14',
+                'medium': 'ffc107',
+                'low': '17a2b8',
+                'info': '6c757d'
+            };
+            return colors[severity] || '6c757d';
+        }
+        
+        function applyFilters() {
+            currentFilters.timeRange = document.getElementById('time-range').value;
+            currentFilters.severity = document.getElementById('severity-filter').value;
+            currentFilters.component = document.getElementById('component-filter').value;
+            loadErrorData();
+        }
+        
+        function acknowledgeAlert(alertId) {
+            fetch(`/error-analysis/acknowledge/${alertId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadErrorData(); // Refresh data
+                    } else {
+                        alert('Failed to acknowledge alert: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    alert('Error acknowledging alert: ' + error.message);
+                });
+        }
+        
+        // Load data when page loads
+        window.onload = loadErrorData;
+    </script>
+</body>
+</html>
