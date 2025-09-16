@@ -1,0 +1,9 @@
+torch 
+transformers 
+datasets 
+scikit-learn 
+flask 
+pandas 
+numpy 
+matplotlib
+cryptography

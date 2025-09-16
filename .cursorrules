@@ -1,0 +1,132 @@
+# Educational AI-Powered Insurance Query Chatbot Project Rules
+
+## Project Context
+This is an educational project to build an AI-powered insurance query chatbot that demonstrates:
+- LLM fine-tuning for natural language understanding
+- ML classification for query types (enrollment, coverage, billing)
+- Local Flask deployment with secure data handling
+- Basic analytics for query trend tracking
+- HIPAA-compliant data practices
+
+## Educational Approach - Step-by-Step Implementation
+
+### 1. ALWAYS EXPLAIN BEFORE IMPLEMENTING
+- Before making ANY code changes, explain:
+  - What you're about to implement
+  - Why this approach was chosen
+  - How it fits into the overall architecture
+  - What files will be created/modified
+  - Dependencies that will be added
+
+### 2. BREAK DOWN COMPLEX TASKS
+- For any task with 3+ steps, create a detailed todo list
+- Present the plan and get approval before starting
+- Update todos as we progress
+- Mark completed items immediately
+
+### 3. FILE CREATION & MODIFICATION APPROVAL
+- Before creating any new file, explain:
+  - File purpose and structure
+  - How it integrates with existing code
+  - Dependencies it will have
+- Before modifying existing files, show:
+  - Current state of relevant sections
+  - Proposed changes with clear diff
+  - Reasoning behind each change
+
+### 4. DEPENDENCY MANAGEMENT
+- Before adding any new dependency:
+  - Explain what it does
+  - Why it's needed for this specific task
+  - Version compatibility considerations
+  - Alternative options considered
+- Always update requirements.txt with explanations
+
+### 5. ARCHITECTURE DECISIONS
+- For each major component, explain:
+  - Design patterns used
+  - Security considerations
+  - Performance implications
+  - Scalability factors
+  - HIPAA compliance aspects
+
+### 6. CODE QUALITY & TESTING
+- Before implementing any function:
+  - Explain the function's purpose
+  - Input/output specifications
+  - Error handling approach
+  - Testing strategy
+- After implementation:
+  - Walk through the code line by line
+  - Explain any complex logic
+  - Suggest improvements or alternatives
+
+### 7. SECURITY & COMPLIANCE
+- For any data handling:
+  - Explain HIPAA compliance measures
+  - Data encryption approach
+  - Storage security
+  - Access controls
+- Always discuss security implications before implementation
+
+### 8. TESTING & VALIDATION
+- Before running any code:
+  - Explain what we're testing
+  - Expected outcomes
+  - Potential failure scenarios
+- After running:
+  - Explain results
+  - Any errors and their fixes
+  - Performance observations
+
+### 9. DOCUMENTATION
+- For each major component:
+  - Explain the documentation approach
+  - What needs to be documented
+  - Where documentation should live
+- Keep README updated with progress
+
+### 10. LEARNING OPPORTUNITIES
+- Always highlight:
+  - Key concepts being demonstrated
+  - Best practices being applied
+  - Common pitfalls to avoid
+  - How this relates to real-world applications
+  - Skills being developed
+
+## Implementation Workflow
+
+1. **Planning Phase**
+   - Discuss the overall approach
+   - Break down into manageable tasks
+   - Get approval for the plan
+
+2. **Development Phase**
+   - For each task:
+     - Explain what we're doing
+     - Show the code changes
+     - Test and validate
+     - Document the changes
+
+3. **Review Phase**
+   - Walk through completed code
+   - Explain key concepts
+   - Discuss improvements
+   - Plan next steps
+
+## Communication Style
+- Use clear, educational language
+- Provide context for every decision
+- Ask for confirmation before major changes
+- Explain technical concepts in accessible terms
+- Encourage questions and discussion
+
+## Error Handling
+- If something goes wrong:
+  - Explain what happened
+  - Why it happened
+  - How to fix it
+  - How to prevent it in the future
+- Always provide learning value from mistakes
+
+Remember: This is an educational project. Every step should be a learning opportunity, and you should understand not just what we're doing, but why we're doing it and how it all fits together.

@@ -1,0 +1,141 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+chatbot_env/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Security & Sensitive Data
+*.key
+encryption.key
+keys/
+*.pem
+*.crt
+*.p12
+*.pfx
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+queries.db
+
+# Logs
+logs/
+*.log
+audit.log
+
+# Generated Files
+static/analytics_dashboard.png
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Model Files (large binary files)
+models/*.pkl
+models/*.joblib
+models/*.h5
+models/*.pth
+models/*.bin
+models/fine_tuned_model/
+
+# Configuration Files (may contain secrets)
+security_config.json
+config.json
+.env
+.env.local
+.env.production
+
+# Insurance Chatbot Specific
+insurance_chatbot/encryption.key
+insurance_chatbot/queries.db
+insurance_chatbot/logs/
+insurance_chatbot/static/
+insurance_chatbot/models/*.pkl
+insurance_chatbot/security_config.json
+
+# Temporary Files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Node.js (if we add any frontend tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Documentation build
+docs/_build/
+site/
+
+# Local development
+.local/
+local_settings.py
